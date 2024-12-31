@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       log.info(`Processing ${request.url}...`);
 
       await page.waitForSelector("#contents ytd-playlist-video-renderer", {
-        timeout: 30000,
+        timeout: 40000,
       });
 
       // Scroll to load all videos
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         while (true) {
           const oldHeight = document.body.scrollHeight;
           window.scrollTo(0, document.body.scrollHeight);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 4000));
           if (document.body.scrollHeight === oldHeight) break;
         }
       });
@@ -61,7 +61,15 @@ export async function POST(request: NextRequest) {
               el.querySelector("#video-title")?.textContent?.trim() || "";
             const viewsText =
               el.querySelector("#video-info span")?.textContent?.trim() || "";
-            const thumbnail = el.querySelector("img")?.src || "";
+            let thumbnail =
+              el.querySelector("img")?.src ||
+              el.querySelector("img")?.getAttribute("data-thumb") ||
+              "";
+
+            // Fallback to the default YouTube thumbnail
+            if (!thumbnail) {
+              thumbnail = "https://img.youtube.com/vi/default.jpg";
+            }
 
             const viewsMatch = viewsText.match(/^([\d,.]+[KMB]?)\s*views?$/i);
             let views = 0;
