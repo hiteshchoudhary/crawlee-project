@@ -1,9 +1,0 @@
-{
-	"id": "WmX5PmEmmmgtIkQ",
-	"json": "{\"id\":\"WmX5PmEmmmgtIkQ\",\"url\":\"https://youtube.com/playlist?list=PLRAV69dS1uWRPSfKzwZsIm-Axxq-LxqhW&si=uq3E8cFT3c9aLbz4\",\"loadedUrl\":\"https://www.youtube.com/playlist?list=PLRAV69dS1uWRPSfKzwZsIm-Axxq-LxqhW\",\"uniqueKey\":\"https://youtube.com/playlist?list=PLRAV69dS1uWRPSfKzwZsIm-Axxq-LxqhW&si=uq3E8cFT3c9aLbz4:f1d4fe85-2731-47cf-99ee-b304586057de\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2024-12-30T23:47:52.438Z\"}",
-	"method": "GET",
-	"orderNo": null,
-	"retryCount": 0,
-	"uniqueKey": "https://youtube.com/playlist?list=PLRAV69dS1uWRPSfKzwZsIm-Axxq-LxqhW&si=uq3E8cFT3c9aLbz4:f1d4fe85-2731-47cf-99ee-b304586057de",
-	"url": "https://youtube.com/playlist?list=PLRAV69dS1uWRPSfKzwZsIm-Axxq-LxqhW&si=uq3E8cFT3c9aLbz4"
-}

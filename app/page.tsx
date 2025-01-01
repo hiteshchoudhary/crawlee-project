@@ -18,6 +18,11 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
   ResponsiveContainer,
 } from "recharts";
 
@@ -37,6 +42,7 @@ export default function Home() {
   const [videoData, setVideoData] = useState<VideoData[]>([]);
   const [graphData, setGraphData] = useState<GraphData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeGraph, setActiveGraph] = useState<"line" | "bar" | "pie">("line");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,15 +71,16 @@ export default function Home() {
     }
   };
 
-  const formatViews = (views: number) => {
-    if (views >= 1000000) {
-      return `${(views / 1000000).toFixed(1)}M`;
-    } else if (views >= 1000) {
-      return `${(views / 1000).toFixed(1)}K`;
-    } else {
-      return views.toString();
+  const formatYAxis = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`;
     }
+    return value.toString();
   };
+
+  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f0e", "#d62728"];
 
   return (
     <div className="container mx-auto p-4">
@@ -101,58 +108,108 @@ export default function Home() {
       </Card>
 
       {videoData.length > 0 && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Video List</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                {videoData.map((video, index) => (
-                  <li key={index} className="flex items-start space-x-4">
-                    <span className="font-bold text-lg min-w-[24px]">
-                      {index + 1}.
-                    </span>
-                    <img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-24 h-auto"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{video.title}</h3>
-                      <p className="text-sm text-gray-600">
-                        {formatViews(video.views)} views
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+        <>
+          <div className="flex justify-center space-x-4 my-6">
+            <Button
+              variant={activeGraph === "line" ? "primary" : "secondary"}
+              onClick={() => setActiveGraph("line")}
+            >
+              Line Graph
+            </Button>
+            <Button
+              variant={activeGraph === "bar" ? "primary" : "secondary"}
+              onClick={() => setActiveGraph("bar")}
+            >
+              Bar Graph
+            </Button>
+            <Button
+              variant={activeGraph === "pie" ? "primary" : "secondary"}
+              onClick={() => setActiveGraph("pie")}
+            >
+              Pie Chart
+            </Button>
+          </div>
 
-          <Card>
+          <Card className="mb-8">
             <CardHeader>
-              <CardTitle>View Count Graph</CardTitle>
+              <CardTitle>Graphical Representation</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={graphData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="views"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
+                {activeGraph === "line" && (
+                  <LineChart
+                    data={graphData}
+                    margin={{ top: 20, right: 30, left: 50, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis tickFormatter={formatYAxis} />
+                    <Tooltip formatter={(value) => formatYAxis(Number(value))} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="views"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                    />
+                  </LineChart>
+                )}
+                {activeGraph === "bar" && (
+                  <BarChart
+                    data={graphData}
+                    margin={{ top: 20, right: 30, left: 50, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis tickFormatter={formatYAxis} />
+                    <Tooltip formatter={(value) => formatYAxis(Number(value))} />
+                    <Legend />
+                    <Bar dataKey="views" fill="#8884d8" />
+                  </BarChart>
+                )}
+                {activeGraph === "pie" && (
+                  <PieChart>
+                    <Pie
+                      data={graphData}
+                      dataKey="views"
+                      nameKey="name"
+                      outerRadius={150}
+                      fill="#8884d8"
+                      label
+                    >
+                      {graphData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatYAxis(Number(value))} />
+                  </PieChart>
+                )}
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {videoData.map((video, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title}
+                    className="w-full h-40 object-cover rounded-t"
+                  />
+                </CardHeader>
+                <CardContent>
+                  <h3 className="font-semibold text-lg truncate">
+                    {video.title}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {formatYAxis(video.views)} views
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

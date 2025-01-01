@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       log.info(`Processing ${request.url}...`);
 
       await page.waitForSelector("#contents ytd-playlist-video-renderer", {
-        timeout: 40000,
+        timeout: 50000,
       });
 
       // Scroll to load all videos
@@ -66,9 +66,14 @@ export async function POST(request: NextRequest) {
               el.querySelector("img")?.getAttribute("data-thumb") ||
               "";
 
-            // Fallback to the default YouTube thumbnail
-            if (!thumbnail) {
-              thumbnail = "https://img.youtube.com/vi/default.jpg";
+            // Ensure the thumbnail is a valid YouTube image URL
+            if (!thumbnail || !thumbnail.startsWith("http")) {
+              const videoId = el.querySelector("a")?.href.split("v=")[1]?.split("&")[0];
+              if (videoId) {
+                thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+              } else {
+                thumbnail = "https://img.youtube.com/vi/default.jpg";
+              }
             }
 
             const viewsMatch = viewsText.match(/^([\d,.]+[KMB]?)\s*views?$/i);
